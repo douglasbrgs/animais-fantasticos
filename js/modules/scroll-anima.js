@@ -4,28 +4,44 @@ export default class ScrollAnima {
     this.halfWindowHeight = window.innerHeight * 0.5;
 
     // bind de callback ao objeto da classe
-    this.animaScroll = this.animaScroll.bind(this);
+    this.checkDistance = this.checkDistance.bind(this);
   }
 
-  animaScroll() {
-    this.sections.forEach((section) => {
-      // section é considerada visivel se seu top é menor que o meio da janela
-      const sectionTop = section.getBoundingClientRect().top;
-      const isSectionVisible = sectionTop - this.halfWindowHeight < 0;
+  // obtém a distância de cada seção ao topo da página
+  getDistance() {
+    // ao contrário do getBoundingClientRect o offset é constante
+    this.distances = [...this.sections].map((section) => {
+      const sectionTop = section.offsetTop;
+      return {
+        element: section,
+        offset: sectionTop - this.halfWindowHeight,
+      };
+    });
+  }
 
-      if (isSectionVisible) {
-        section.classList.add('ativo');
-      } else if (section.classList.contains('ativo')) {
-        section.classList.remove('ativo');
+  // verifica a posição de cada elemento em relação ao scroll
+  checkDistance() {
+    this.distances.forEach((item) => {
+      // adiciona classe se o scroll passou da posição do elemento
+      if (window.pageYOffset > item.offset) {
+        item.element.classList.add('ativo');
+      } else if (item.element.classList.contains('ativo')) {
+        item.element.classList.remove('ativo');
       }
     });
   }
 
   init() {
     if (this.sections.length) {
-      this.animaScroll();
-      window.addEventListener('scroll', this.animaScroll);
+      this.getDistance();
+      this.checkDistance();
+      window.addEventListener('scroll', this.checkDistance);
     }
     return this;
+  }
+
+  // remove o event listener de scroll do window
+  stop() {
+    window.removeEventListener('scroll', this.checkDistance);
   }
 }
