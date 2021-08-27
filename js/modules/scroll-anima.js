@@ -1,10 +1,12 @@
+import debounce from './debounce';
+
 export default class ScrollAnima {
   constructor(sections) {
     this.sections = document.querySelectorAll(sections);
     this.halfWindowHeight = window.innerHeight * 0.5;
 
     // bind de callback ao objeto da classe
-    this.checkDistance = this.checkDistance.bind(this);
+    this.checkDistance = debounce(this.checkDistance.bind(this), 50);
   }
 
   // obtém a distância de cada seção ao topo da página
