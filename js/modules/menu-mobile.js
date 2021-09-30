@@ -15,7 +15,8 @@ export default class menuMobile {
   }
 
   // abre menu adicionando classe ao css
-  openMenu() {
+  openMenu(event) {
+    event.preventDefault();
     this.menuButton.classList.add(this.activeClass);
     this.menuList.classList.add(this.activeClass);
 
